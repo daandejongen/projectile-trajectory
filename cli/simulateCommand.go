@@ -25,11 +25,13 @@ func NewSimulateCommand() *cobra.Command {
 		Short: "Simulate the trajectory of a projectile.",
 		Args:  cobra.ExactArgs(2),
 		Run: func(cmd *cobra.Command, args []string) {
+			// Input
 			angleInDegrees, angleParsingErr := strconv.ParseFloat(args[0], 64)
 			speed, speedParsingError := strconv.ParseFloat(args[1], 64)
 			drag, dragErr := translateDrag(dragTypeInput)
 			handleErrors(exitWithErrorStatus, angleParsingErr, speedParsingError, dragErr)
 
+			// Simulate
 			simulator := app.NewTrajectorySimulator().
 				WithInitialAngle(trigonometry.RadiansFromDegrees(angleInDegrees)).
 				WithInitialSpeed(speed).
@@ -37,10 +39,10 @@ func NewSimulateCommand() *cobra.Command {
 			if addThrust {
 				simulator.WithThrust(app.Thrust{Angle: trigonometry.RadiansFromDegrees(45), Force: 100, Duration: 5})
 			}
-
 			trajectory, trajectorySimulationErr := simulator.Simulate()
 			handleErrors(printErrorToStOut, trajectorySimulationErr)
 
+			// Output
 			fmt.Fprintf(os.Stdout, "Landing point: x = %f\n", trajectory.LandingPoint())
 			fmt.Fprintf(os.Stdout, "Airtime:       %f seconds\n", trajectory.AirTime())
 
@@ -50,7 +52,7 @@ func NewSimulateCommand() *cobra.Command {
 			defer logFile.Close()
 			simulator.Print(logFile)
 			fmt.Fprintf(logFile, "Landing point: x = %f\n", trajectory.LandingPoint())
-			fmt.Fprintf(logFile, "Airtime:       %f seconds\n", trajectory.AirTime())
+			fmt.Fprintf(logFile, "Airtime: %f seconds\n", trajectory.AirTime())
 			if makePlot {
 				fmt.Println("generating plot...")
 				plotErr := app.Plot(trajectory, fmt.Sprintf("./%s/%s/simulation-%s", outputDir, plotDir, timeStamp))
@@ -58,9 +60,11 @@ func NewSimulateCommand() *cobra.Command {
 			}
 		},
 	}
+
 	command.Flags().StringVarP(&dragTypeInput, "drag", "D", "", "How drag is modeled proportional to the projectile's velocity: 'l' for linear or 'q' for quadratic. Leave empty for no drag.")
 	command.Flags().BoolVarP(&addThrust, "thrust", "T", false, "Add a thrust of 100N in a constant 45 degree angle for the first 5 seconds.")
 	command.Flags().BoolVarP(&makePlot, "plot", "P", false, fmt.Sprintf("Bool to indicate whether the trajectory should be plotted and saved to ./%s/%s/", outputDir, plotDir))
+	
 	return command
 }
 
