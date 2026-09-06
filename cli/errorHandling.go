@@ -28,8 +28,7 @@ func handleErrors(action errorAction, possibleErrors ...error) {
 
 	if hasError {
 		for _, err := range errors {
-			fmt.Println(err.Error())
+			action(err)
 		}
-		os.Exit(1)
 	}
 }
