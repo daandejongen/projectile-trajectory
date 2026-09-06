@@ -70,16 +70,19 @@ func NewSimulateCommand() *cobra.Command {
 			}
 
 			if saveData {
+				fmt.Print("writing csv...")
 				dataFile, createDataFileErr := os.Create(fmt.Sprintf("./%s/%s/simulation-data-%s.csv", outputDir, dataDir, timeStamp))
 				handleErrors(printErrorToStOut, createDataFileErr)
 				defer dataFile.Close()
 				app.WriteCsv(dataFile, trajectory)
+				fmt.Println(" succeeded")
 			}
 
 			if makePlot {
-				fmt.Println("generating plot...")
+				fmt.Print("generating plot...")
 				plotErr := app.Plot(trajectory, fmt.Sprintf("./%s/%s/simulation-plot-%s", outputDir, plotDir, timeStamp))
 				handleErrors(printErrorToStOut, plotErr)
+				fmt.Println(" succeeded")
 			}
 		},
 	}
