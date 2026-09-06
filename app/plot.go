@@ -9,7 +9,7 @@ import (
 	"gonum.org/v1/plot/vg"
 )
 
-func Plot(trajectory Trajectory, path string) error {
+func Plot(trajectory Trajectory, pathWithoutFileExtension string) error {
     plot := plot.New()
 	plot.Title.Text = "Projectile trajectory"
 	plot.X.Label.Text = "x"
@@ -28,7 +28,8 @@ func Plot(trajectory Trajectory, path string) error {
 
 	width := 6 * vg.Inch
 	height := 4 * vg.Inch
-	if err := plot.Save(width, height, path); err != nil {
+
+	if err := plot.Save(width, height, pathWithoutFileExtension + ".png"); err != nil {
 		log.Fatalf("Failed to save plot: %v", err)
 	}
 	

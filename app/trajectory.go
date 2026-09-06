@@ -16,10 +16,6 @@ func (trajectory Trajectory) AirTime() float64 {
 	return float64(len(trajectory.Points)-1) * trajectory.timeStepInterval
 }
 
-func (trajectory Trajectory) PositionOnGroundHit() (float64, float64) {
-	n := len(trajectory.Points)
-	if trajectory.Points[n-1].Position.Y == 0 {
-		return trajectory.Points[n-1].Position.X, trajectory.Points[n-1].Position.X
-	}
-	return trajectory.Points[n-1].Position.X, trajectory.Points[n-2].Position.X
+func (trajectory Trajectory) PositionOnGroundHit() float64 {
+	return trajectory.Points[len(trajectory.Points)-1].Position.X
 }
