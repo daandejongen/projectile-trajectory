@@ -29,7 +29,7 @@ type quadraticDragForceCalculator struct {
 
 func newQuadraticDragForceCalculator(projectile projectile) quadraticDragForceCalculator {
 	return quadraticDragForceCalculator{
-		constant: -0.5 * constants.airDensity * projectile.FrontalArea() * projectile.DragCoefficient(),
+		constant: -0.5 * airDensity * projectile.FrontalArea() * projectile.DragCoefficient(),
 	}
 }
 

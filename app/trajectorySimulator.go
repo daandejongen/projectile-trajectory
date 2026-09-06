@@ -45,7 +45,7 @@ func (simulator TrajectorySimulator) Simulate() (Trajectory, error) {
 	}
 	timeStepCount := 0
 	projectileLanded := false
-	points := make([]Point, simulator.maxTimeSteps + 1)
+	points := make([]Point, simulator.maxTimeSteps+1)
 	points[timeStepCount] = Point{
 		Position: simulator.initialPosition,
 		Velocity: linalg.NewVectorFromLengthAndAngle(simulator.initialSpeed, simulator.initialAngle),
@@ -59,7 +59,7 @@ func (simulator TrajectorySimulator) Simulate() (Trajectory, error) {
 
 		currentVelocity := points[timeStepCount].Velocity
 		dragForce := dragForceCalculator.compute(currentVelocity)
-		acceleration := constants.gravityAcceleration.Add(dragForce.ComputeScalarMultiplication(1 / simulator.projectile.Mass()))
+		acceleration := gravityAcceleration.Add(dragForce.ComputeScalarMultiplication(1 / simulator.projectile.Mass()))
 		nextVelocity := currentVelocity.Add(acceleration.ComputeScalarMultiplication(simulator.timeStepInterval))
 
 		var nextPosition linalg.Vector2d
