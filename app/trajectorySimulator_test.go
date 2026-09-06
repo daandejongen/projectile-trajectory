@@ -67,3 +67,10 @@ func TestTrajectoryWithoutThrust_HasLessAirTimeThan_TrajectoryWithThrust(t *test
 
 	assert.Less(t, trajectoryWithoutThrust.AirTime(), trajectoryWithThrust.AirTime())
 }
+
+func TestTrajectoryWithThrust(t *testing.T) {
+	simulator := NewTrajectorySimulator().WithInitialSpeed(50).WithThrust(Thrust{Duration: 1, Force: 30, Angle: 45})
+	trajectory, _ := simulator.Simulate()
+
+	assert.Equal(t, trajectory.timeStepInterval, 1)
+}

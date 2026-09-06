@@ -20,19 +20,19 @@ Simulate a trajectory with 45 degree shooting angle and inital speed 100 m/s.
 
 The following flags are available:
 
-    --drag   -D   > model drag linearly (l) or quadraticly (q) (default empty, no drag)
-    --thrust -T   > add thrust of 100N in constant 45 degree angle (default false)
-    --plot   -P   > create a plot of the trajectory (default false)
-    --save   -S   > save the trajectory data (default false)
-    --log    -L   > log the simulator conditions (default false)
+    --drag   -D   > no drag (''), linear ('l') or quadratic ('q')
+    --thrust -T   > add thrust properties, 'angle:70,force:50,duration:9'
+    --plot   -P   > create a plot of the trajectory (bool)
+    --csv    -C   > save the trajectory data as csv (bool)
+    --log    -L   > log the simulator conditions (bool)
 
 Example:
 
-    go run . sim 45 100 --drag q --thrust --plot
+    go run . sim 45 100 --drag q --plot --csv
 
 Using shorthands:
 
-    go run . sim 45 100 -D q -T -P
+    go run . sim 45 100 -D q -P -C
 
 # Output files
 

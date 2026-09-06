@@ -19,3 +19,7 @@ func (trajectory Trajectory) AirTime() float64 {
 func (trajectory Trajectory) LandingPoint() float64 {
 	return trajectory.Points[len(trajectory.Points)-1].Position.X
 }
+
+func (trajectory Trajectory) SimulationIterations() int {
+	return len(trajectory.Points) - 1
+}

@@ -12,6 +12,6 @@ type Thrust struct {
 	Duration float64
 }
 
-func (thrust Thrust) string() string {
-	return fmt.Sprintf("Angle=%f rad, force=%fN, duration=%fs", thrust.Angle, thrust.Force, thrust.Duration) 
+func (thrust Thrust) String() string {
+	return fmt.Sprintf("angle=%frad, force=%fN, duration=%fs", thrust.Angle, thrust.Force, thrust.Duration)
 }

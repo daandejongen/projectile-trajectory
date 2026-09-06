@@ -42,7 +42,7 @@ func NewTrajectorySimulator() *TrajectorySimulator {
 		initialSpeed:            1,
 		dragType:                NoDrag,
 		thrust:                  Thrust{Angle: 0, Force: 0, Duration: 0},
-		timeStepInterval:        1e-5,
+		timeStepInterval:        1e-3,
 		integrationMethod:       ForwardEulerIntegration,
 		maxTimeSteps:            1000000,
 		errorToleranceAtLanding: 1e-5,
@@ -131,7 +131,7 @@ func (simulator TrajectorySimulator) Print(writer io.Writer) {
 	fmt.Fprintf(writer, "initial position:  %f\n", simulator.initialPosition)
 	fmt.Fprintf(writer, "initial angle:     %f\n", simulator.initialAngle)
 	fmt.Fprintf(writer, "initial speed:     %f\n", simulator.initialSpeed)
-	fmt.Fprintf(writer, "thrust:            %s\n", simulator.thrust.string())
+	fmt.Fprintf(writer, "thrust:            %s\n", simulator.thrust.String())
 	fmt.Fprintf(writer, "timeStepInterval:  %f\n", simulator.timeStepInterval)
 	fmt.Fprintf(writer, "drag type:         %s\n", simulator.dragType)
 	fmt.Fprintf(writer, "integrationMethod: %s\n", simulator.integrationMethod)
