@@ -5,9 +5,31 @@ import (
 	"os"
 )
 
-func exitIfError(err error) {
-	if err != nil {
-		fmt.Println(err.Error())
+type errorAction = func(error)
+
+func printErrorToStOut(err error) {
+	fmt.Println(err)
+}
+
+func exitWithErrorStatus(error) {
+	os.Exit(1)
+}
+
+func handleErrors(action errorAction, possibleErrors ...error) {
+	hasError := false
+	errors := []error{}
+
+	for _, possibleErr := range possibleErrors {
+		if possibleErr != nil {
+			hasError = true
+		}
+		errors = append(errors, possibleErr)
+	}
+
+	if hasError {
+		for _, err := range errors {
+			fmt.Println(err.Error())
+		}
 		os.Exit(1)
 	}
 }

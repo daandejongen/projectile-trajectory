@@ -14,6 +14,7 @@ import (
 
 const outputDir string = "output"
 const plotDir string = "plots"
+const logDir string = "logs"
 
 func NewSimulateCommand() *cobra.Command {
 	var dragTypeInput string
@@ -26,11 +27,8 @@ func NewSimulateCommand() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			angleInDegrees, angleParsingErr := strconv.ParseFloat(args[0], 64)
 			speed, speedParsingError := strconv.ParseFloat(args[1], 64)
-			exitIfError(angleParsingErr)
-			exitIfError(speedParsingError)
-
 			drag, dragErr := translateDrag(dragTypeInput)
-			exitIfError(dragErr)
+			handleErrors(exitWithErrorStatus, angleParsingErr, speedParsingError, dragErr)
 
 			simulator := app.NewTrajectorySimulator().
 				WithInitialAngle(trigonometry.RadiansFromDegrees(angleInDegrees)).
@@ -40,17 +38,23 @@ func NewSimulateCommand() *cobra.Command {
 				simulator.WithThrust(app.Thrust{Angle: trigonometry.RadiansFromDegrees(45), Force: 100, Duration: 5})
 			}
 
-			simulator.Print(os.Stdout)
-			trajectory, err := simulator.Simulate()
-			exitIfError(err)
+			trajectory, trajectorySimulationErr := simulator.Simulate()
+			handleErrors(printErrorToStOut, trajectorySimulationErr)
 
-			landingPoint := trajectory.LandingPoint()
-			fmt.Fprintf(os.Stdout, "Projectile landed at x = %f\n", landingPoint)
-			fmt.Fprintf(os.Stdout, "Airtime: %f seconds\n", trajectory.AirTime())
+			fmt.Fprintf(os.Stdout, "Landing point: x = %f\n", trajectory.LandingPoint())
+			fmt.Fprintf(os.Stdout, "Airtime:       %f seconds\n", trajectory.AirTime())
 
+			timeStamp := time.Now().Format("20060102-150405")
+			logFile, createLogFileErr := os.Create(fmt.Sprintf("./%s/%s/simulation-%s", outputDir, logDir, timeStamp))
+			handleErrors(printErrorToStOut, createLogFileErr)
+			defer logFile.Close()
+			simulator.Print(logFile)
+			fmt.Fprintf(logFile, "Landing point: x = %f\n", trajectory.LandingPoint())
+			fmt.Fprintf(logFile, "Airtime:       %f seconds\n", trajectory.AirTime())
 			if makePlot {
-				plotErr := app.Plot(trajectory, fmt.Sprintf("./%s/%s/simulated-projectile-trajectory-%s", outputDir, plotDir, time.Now().Format("20060102-150405")))
-				exitIfError(plotErr)
+				fmt.Println("generating plot...")
+				plotErr := app.Plot(trajectory, fmt.Sprintf("./%s/%s/simulation-%s", outputDir, plotDir, timeStamp))
+				handleErrors(printErrorToStOut, plotErr)
 			}
 		},
 	}
