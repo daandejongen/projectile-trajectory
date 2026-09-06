@@ -108,6 +108,9 @@ func parseDragTypeInput(input string) (app.DragType, error) {
 
 func parseThrustInput(input string) (app.Thrust, error) {
 	thrust := defaultThrust
+	if input == "" {
+		return thrust, nil
+	}
 	components := strings.Split(input, ",")
 	for _, component := range components {
 		propertyAndValue := strings.Split(component, ":")
@@ -141,7 +144,7 @@ func parseThrustInput(input string) (app.Thrust, error) {
 }
 
 func printTrajectoryResults(writer io.Writer, trajectory app.Trajectory) {
-	fmt.Fprintf(os.Stdout, "Landing point:   x = %f\n", trajectory.LandingPoint())
-	fmt.Fprintf(os.Stdout, "Airtime:         %f seconds\n", trajectory.AirTime())
-	fmt.Fprintf(os.Stdout, "Sim. Iterations: %d\n", trajectory.SimulationIterations())
+	fmt.Fprintf(writer, "Landing point:   x = %f\n", trajectory.LandingPoint())
+	fmt.Fprintf(writer, "Airtime:         %f seconds\n", trajectory.AirTime())
+	fmt.Fprintf(writer, "Sim. Iterations: %d\n", trajectory.SimulationIterations())
 }
