@@ -44,8 +44,15 @@ func TestTrajectoryWithoutDrag_HasMoreAirTimeThan_TrajectoryWithDrag(t *testing.
 	simulator.WithDragType(Quadratic)
 	trajectoryWithDrag, _ := simulator.Simulate()
 
-	one := trajectoryWithoutDrag.AirTime()
-	two := trajectoryWithDrag.AirTime()
+	assert.Greater(t, trajectoryWithoutDrag, trajectoryWithDrag)
+}
 
-	assert.Greater(t, one, two)
+func TestTrajectoryWithoutThrust_HasLessAirTimeThan_TrajectoryWithThrust(t *testing.T) {
+	simulator := NewTrajectorySimulator().WithInitialSpeed(50).WithThrust(Thrust{Duration: 0})
+	trajectoryWithoutThrust, _ := simulator.Simulate()
+
+	simulator.WithThrust(Thrust{Angle: 45, Force: 50, Duration: 5})
+	trajectoryWithThrust, _ := simulator.Simulate()
+
+	assert.Less(t, trajectoryWithoutThrust.AirTime(), trajectoryWithThrust.AirTime())
 }
