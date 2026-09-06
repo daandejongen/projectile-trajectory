@@ -2,36 +2,6 @@
 
 This is a Command Line Interface (CLI) application to simulate the trajectory of a projectile in 2 dimensions, with three forces acting on the projectile: gravity, drag (air resistance) and thrust.
 
-The projectile's trajectory can be modeled with the following equations:
-
-$$\dot{\mathbf{r}}_t = \mathbf{v}_t$$
-
-where 
-$\mathbf{r} = \begin{pmatrix}x_t \\\ y_t \end{pmatrix}$
-is the position and 
-$\mathbf{v} = \begin{pmatrix}\dot{x}_t \\\ \dot{y}_t \end{pmatrix}$
-is the velocity of the projectile.
-
-The velocity is changing according to
-
-$$\dot{\mathbf{v}}_t 
-= \mathbf{a}_t = \mathbf{g} + \frac{\mathbf{F}_{t,\mathrm{drag}}}{m} + \frac{\mathbf{F}_{t,\mathrm{thrust}}}{m},$$
-
-where $\mathbf{g} = \begin{pmatrix}0 \\\ -9.81 \end{pmatrix}.$
-
-When drag is modeled quadratic, like
-
-$$\mathbf{F}_{t,\mathrm{drag}} 
-= -k |\mathbf{v}|^2 \hat{\mathbf{v}} 
-= -k |\mathbf{v}|^2 \frac{\mathbf{v}}{|\mathbf{v}|} 
-= -k |\mathbf{v}| \mathbf{v},$$
-
-with
-
-$$k := \frac{1}{2} \rho C_D A,$$
-
-where $\rho$ is the air density, $C_D$ is the drag coefficient of the projectile and $A$ is its frontal area, the system of equations has no analytic solution, because the equations for the $y$ dimension will include components from $x$ (i.e., the vertical and horizontal movements are no longer independent of each other). Therefore, we need numerical methods to obtain the projectile's trajectory.
-
 # Getting Started
 
 1. [Install Go](https://go.dev/doc/install) on your local machine.
@@ -72,3 +42,35 @@ There are three output directories:
         /plots   > to save trajectory plots
 
 Logs and data are filled automatically, plots only when the `--plot` flag is set.
+
+# Mathematical background
+
+The projectile's trajectory can be modeled with the following equations:
+
+$$\dot{\mathbf{r}}_t = \mathbf{v}_t$$
+
+where 
+$\mathbf{r} = (x_t, y_t)$
+is the position and 
+$\mathbf{v} = (\dot{x}_t, \dot{y}_t)$
+is the velocity of the projectile.
+
+The velocity is changing according to
+
+$$\dot{\mathbf{v}}_t 
+= \mathbf{a}_t = \mathbf{g} + \frac{\mathbf{F}_{t,\mathrm{drag}}}{m} + \frac{\mathbf{F}_{t,\mathrm{thrust}}}{m},$$
+
+where $\mathbf{g} = (0, -9.81).$
+
+When drag is modeled quadratic, like
+
+$$\mathbf{F}_{t,\mathrm{drag}} 
+= -k |\mathbf{v}|^2 \hat{\mathbf{v}} 
+= -k |\mathbf{v}|^2 \frac{\mathbf{v}}{|\mathbf{v}|} 
+= -k |\mathbf{v}| \mathbf{v},$$
+
+with
+
+$$k := \frac{1}{2} \rho C_D A,$$
+
+where $\rho$ is the air density, $C_D$ is the drag coefficient of the projectile and $A$ is its frontal area, the system of equations has no analytic solution, because the equations for the $y$ dimension will include components from $x$ (i.e., the vertical and horizontal movements are no longer independent of each other). Therefore, we need numerical methods to obtain the projectile's trajectory, like this simulator.
