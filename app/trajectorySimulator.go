@@ -36,13 +36,13 @@ type thrustForceCalculator interface {
 
 func NewTrajectorySimulator() *TrajectorySimulator {
 	return &TrajectorySimulator{
-		projectile:              Sphere{radius: 1, density: 1},
+		projectile:              Sphere{radiusInCm: 3, densityInGramsPerCm3: 7.8},
 		initialPosition:         linalg.Vector2d{X: 0, Y: 0},
 		initialAngle:            0.25 * math.Pi,
 		initialSpeed:            1,
 		dragType:                NoDrag,
 		thrust:                  Thrust{Angle: 0, Force: 0, Duration: 0},
-		timeStepInterval:        1e-3,
+		timeStepInterval:        1e-4,
 		integrationMethod:       ForwardEulerIntegration,
 		maxTimeSteps:            1000000,
 		errorToleranceAtLanding: 1e-5,
@@ -74,8 +74,8 @@ func (simulator TrajectorySimulator) Simulate() (Trajectory, error) {
 		dragForce := dragForceCalculator.compute(currentVelocity)
 		thrustForce := thrustForceCalculator.compute(currentVelocity, simulator.timeStepInterval*float64(timeStepCount))
 		acceleration := gravityAcceleration.
-			Add(dragForce.ComputeScalarMultiplication(1 / simulator.projectile.Mass())).
-			Add(thrustForce.ComputeScalarMultiplication(1 / simulator.projectile.Mass()))
+			Add(dragForce.ComputeScalarMultiplication(1 / simulator.projectile.MassInGrams())).
+			Add(thrustForce.ComputeScalarMultiplication(1 / simulator.projectile.MassInGrams()))
 		nextVelocity := currentVelocity.Add(acceleration.ComputeScalarMultiplication(simulator.timeStepInterval))
 
 		var nextPosition linalg.Vector2d

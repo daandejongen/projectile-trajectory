@@ -1,8 +1,8 @@
 package app
 
 type projectile interface {
-	FrontalArea() float64
-	Mass() float64
+	FrontalAreaInCubicMeters() float64
+	MassInGrams() float64
 	DragCoefficient() float64
 	string() string
 }

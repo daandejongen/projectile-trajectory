@@ -8,8 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const floatingPointTolerance = 1e-5
-
 func TestSimulationDoesNotExceedMaxTimeSteps(t *testing.T) {
 	simulator := NewTrajectorySimulator().WithInitialSpeed(10000)
 	simulator.maxTimeSteps = 3
@@ -37,15 +35,15 @@ func TestSimulation_YieldsTrajectoryWhereFirstPoint_EqualsTheInitialCondition(t 
 	firstPoint := trajectory.Points[0]
 	assert.Equal(t, float64(2), firstPoint.Position.X)
 	assert.Equal(t, float64(1), firstPoint.Position.Y)
-	assert.Less(t, firstPoint.Velocity.X, floatingPointTolerance)
-	assert.Less(t, firstPoint.Velocity.Y-50, floatingPointTolerance)
+	assert.Less(t, firstPoint.Velocity.X, testToleranceForRoundingErrors)
+	assert.Less(t, firstPoint.Velocity.Y-50, testToleranceForRoundingErrors)
 }
 
 func TestTrajectoryWithoutDrag_WithInitalSpeedEqualToGravity_Spends2SecondsInTheAir(t *testing.T) {
 	simulator := NewTrajectorySimulator().WithInitialSpeed(9.81).WithInitialAngle(0.5 * math.Pi).WithIntegrationMethod(SimplecticEulerIntegration)
 	trajectory, err := simulator.Simulate()
 	assert.NoError(t, err)
-	assert.Less(t, math.Abs(trajectory.AirTime()-2), floatingPointTolerance)
+	assert.Less(t, math.Abs(trajectory.AirTime()-2), testToleranceForRoundingErrors)
 }
 
 func TestTrajectoryWithoutDrag_HasMoreAirTimeThan_TrajectoryWithDrag(t *testing.T) {
