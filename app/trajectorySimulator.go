@@ -23,6 +23,17 @@ type TrajectorySimulator struct {
 	errorToleranceAtLanding float64
 }
 
+// dependency declarations, implemented elsewhere
+type dragForceCalculator interface {
+	compute(velocity linalg.Vector2d) linalg.Vector2d
+}
+
+type thrustForceCalculator interface {
+	compute(velocity linalg.Vector2d, timePassed float64) linalg.Vector2d
+}
+
+// end dependencies
+
 func NewTrajectorySimulator() *TrajectorySimulator {
 	return &TrajectorySimulator{
 		projectile:              Sphere{radius: 1, density: 1},
@@ -45,12 +56,14 @@ func (simulator TrajectorySimulator) Simulate() (Trajectory, error) {
 	}
 	timeStepCount := 0
 	projectileLanded := false
-	points := make([]Point, simulator.maxTimeSteps + 1)
+	points := make([]Point, simulator.maxTimeSteps+1)
 	points[timeStepCount] = Point{
 		Position: simulator.initialPosition,
 		Velocity: linalg.NewVectorFromLengthAndAngle(simulator.initialSpeed, simulator.initialAngle),
 	}
+
 	dragForceCalculator := newDragForceCalculator(simulator.dragType, simulator.projectile)
+	thrustForceCalculator := newThrustForceCalculator(simulator.thrust)
 
 	for !projectileLanded {
 		if timeStepCount == simulator.maxTimeSteps {
@@ -59,7 +72,10 @@ func (simulator TrajectorySimulator) Simulate() (Trajectory, error) {
 
 		currentVelocity := points[timeStepCount].Velocity
 		dragForce := dragForceCalculator.compute(currentVelocity)
-		acceleration := constants.gravityAcceleration.Add(dragForce.ComputeScalarMultiplication(1 / simulator.projectile.Mass()))
+		thrustForce := thrustForceCalculator.compute(currentVelocity, simulator.timeStepInterval*float64(timeStepCount))
+		acceleration := gravityAcceleration.
+			Add(dragForce.ComputeScalarMultiplication(1 / simulator.projectile.Mass())).
+			Add(thrustForce.ComputeScalarMultiplication(1 / simulator.projectile.Mass()))
 		nextVelocity := currentVelocity.Add(acceleration.ComputeScalarMultiplication(simulator.timeStepInterval))
 
 		var nextPosition linalg.Vector2d

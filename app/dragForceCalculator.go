@@ -2,16 +2,12 @@ package app
 
 import "github.com/daandejongen/projectile-trajectory/linalg"
 
-type dragForceCalculator interface {
-	compute(velocity linalg.Vector2d) linalg.Vector2d
-}
-
 func newDragForceCalculator(dragType DragType, projectile projectile) dragForceCalculator {
 	switch dragType {
 	case NoDrag:
 		return noDragForceCalculator{}
 	case Quadratic:
-		return newQuadraticDragForceCalculator(projectile)
+		return quadraticDragForceCalculator{constant: -0.5 * airDensity * projectile.FrontalArea() * projectile.DragCoefficient()}
 	default:
 		return noDragForceCalculator{}
 	}
@@ -25,12 +21,6 @@ func (calculator noDragForceCalculator) compute(velocity linalg.Vector2d) linalg
 
 type quadraticDragForceCalculator struct {
 	constant float64
-}
-
-func newQuadraticDragForceCalculator(projectile projectile) quadraticDragForceCalculator {
-	return quadraticDragForceCalculator{
-		constant: -0.5 * constants.airDensity * projectile.FrontalArea() * projectile.DragCoefficient(),
-	}
 }
 
 func (calculator quadraticDragForceCalculator) compute(velocity linalg.Vector2d) linalg.Vector2d {

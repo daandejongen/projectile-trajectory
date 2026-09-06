@@ -44,7 +44,7 @@ func NewSimulateCommand() *cobra.Command {
 			trajectory, err := simulator.Simulate()
 			exitIfError(err)
 
-			landingPoint := trajectory.PositionOnGroundHit()
+			landingPoint := trajectory.LandingPoint()
 			fmt.Fprintf(os.Stdout, "Projectile landed at x = %f\n", landingPoint)
 			fmt.Fprintf(os.Stdout, "Airtime: %f seconds\n", trajectory.AirTime())
 
@@ -54,8 +54,8 @@ func NewSimulateCommand() *cobra.Command {
 			}
 		},
 	}
-	command.Flags().StringVar(&dragTypeInput, "drag", "", "How drag is modeled proportional to the projectile's velocity: 'l' for linear or 'q' for quadratic. Leave empty for no drag.")
-	command.Flags().BoolVar(&addThrust, "thrust", false, "Add a thrust of 100N in a constant 45 degree angle for the first 5 seconds.")
+	command.Flags().StringVarP(&dragTypeInput, "drag", "D", "", "How drag is modeled proportional to the projectile's velocity: 'l' for linear or 'q' for quadratic. Leave empty for no drag.")
+	command.Flags().BoolVarP(&addThrust, "thrust", "T", false, "Add a thrust of 100N in a constant 45 degree angle for the first 5 seconds.")
 	command.Flags().BoolVarP(&makePlot, "plot", "P", false, fmt.Sprintf("Bool to indicate whether the trajectory should be plotted and saved to ./%s/%s/", outputDir, plotDir))
 	return command
 }
