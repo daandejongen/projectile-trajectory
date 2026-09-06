@@ -14,10 +14,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const outputDir string = "output"
-const plotDir string = "plots"
-const logDir string = "logs"
-const dataDir string = "data"
+const plotDir string = "output/plots"
+const logDir string = "output/logs"
+const dataDir string = "output/data"
 
 const defaultDragType = app.NoDrag
 var defaultThrust = app.Thrust{Duration: 0, Force: 0, Angle: 45}
@@ -57,7 +56,8 @@ func NewSimulateCommand() *cobra.Command {
 			timeStamp := time.Now().Format("20060102-150405")
 
 			if logSimulatorConditions {
-				logFile, createLogFileErr := os.Create(fmt.Sprintf("./%s/%s/simulation-log-%s.txt", outputDir, logDir, timeStamp))
+				os.MkdirAll(logDir, 0755)
+				logFile, createLogFileErr := os.Create(fmt.Sprintf("%s/simulation-log-%s.txt", logDir, timeStamp))
 				handleErrors(printErrorToStOut, createLogFileErr)
 				defer logFile.Close()
 				simulator.Print(logFile)
@@ -70,8 +70,9 @@ func NewSimulateCommand() *cobra.Command {
 			}
 
 			if saveData {
+				os.MkdirAll(dataDir, 0755)
 				fmt.Print("writing csv...")
-				dataFile, createDataFileErr := os.Create(fmt.Sprintf("./%s/%s/simulation-data-%s.csv", outputDir, dataDir, timeStamp))
+				dataFile, createDataFileErr := os.Create(fmt.Sprintf("%s/simulation-data-%s.csv", dataDir, timeStamp))
 				handleErrors(printErrorToStOut, createDataFileErr)
 				defer dataFile.Close()
 				app.WriteCsv(dataFile, trajectory)
@@ -79,8 +80,9 @@ func NewSimulateCommand() *cobra.Command {
 			}
 
 			if makePlot {
+				os.MkdirAll(plotDir, 0755)
 				fmt.Print("generating plot...")
-				plotErr := app.Plot(trajectory, fmt.Sprintf("./%s/%s/simulation-plot-%s", outputDir, plotDir, timeStamp))
+				plotErr := app.Plot(trajectory, fmt.Sprintf("%s/simulation-plot-%s", plotDir, timeStamp))
 				handleErrors(printErrorToStOut, plotErr)
 				fmt.Println(" succeeded")
 			}
@@ -89,9 +91,9 @@ func NewSimulateCommand() *cobra.Command {
 
 	command.Flags().StringVarP(&dragTypeInput, "drag", "D", "", "How drag is modeled proportional to the projectile's velocity: 'l' for linear or 'q' for quadratic. Leave empty for no drag.")
 	command.Flags().StringVarP(&thrustInput, "thrust", "T", "", fmt.Sprintf("Add thrust of the form 'angle:45,duration:5,force:100' in degrees, seconds and Newton respectively. Default %s: You can omit properties to use the default for it.", defaultThrust.String()))
-	command.Flags().BoolVarP(&makePlot, "plot", "P", false, fmt.Sprintf("Bool to indicate whether the trajectory should be plotted and saved to ./%s/%s/", outputDir, plotDir))
-	command.Flags().BoolVarP(&saveData, "csv", "C", false, fmt.Sprintf("Bool to indicate whether the trajectory should be saved as csv in ./%s/%s/", outputDir, dataDir))
-	command.Flags().BoolVarP(&logSimulatorConditions, "log", "L", false, fmt.Sprintf("Bool to indicate whether the simulator settings should be saved ./%s/%s/", outputDir, logDir))
+	command.Flags().BoolVarP(&makePlot, "plot", "P", false, fmt.Sprintf("Bool to indicate whether the trajectory should be plotted and saved to ./%s/", plotDir))
+	command.Flags().BoolVarP(&saveData, "csv", "C", false, fmt.Sprintf("Bool to indicate whether the trajectory should be saved as csv in ./%s/", dataDir))
+	command.Flags().BoolVarP(&logSimulatorConditions, "log", "L", false, fmt.Sprintf("Bool to indicate whether the simulator settings should be saved ./%s/", logDir))
 
 	return command
 }
