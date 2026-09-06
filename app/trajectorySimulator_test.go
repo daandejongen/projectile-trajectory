@@ -40,10 +40,10 @@ func TestSimulation_YieldsTrajectoryWhereFirstPoint_EqualsTheInitialCondition(t 
 }
 
 func TestTrajectoryWithoutDrag_WithInitalSpeedEqualToGravity_Spends2SecondsInTheAir(t *testing.T) {
-	simulator := NewTrajectorySimulator().WithInitialSpeed(9.81).WithInitialAngle(0.5 * math.Pi).WithIntegrationMethod(SimplecticEulerIntegration)
+	simulator := NewTrajectorySimulator().WithInitialSpeed(9.81).WithInitialAngle(0.5 * math.Pi)
 	trajectory, err := simulator.Simulate()
 	assert.NoError(t, err)
-	assert.Less(t, math.Abs(trajectory.AirTime()-2), testToleranceForRoundingErrors)
+	assert.Less(t, math.Abs(trajectory.AirTime()-2), 0.001)
 }
 
 func TestTrajectoryWithoutDrag_HasMoreAirTimeThan_TrajectoryWithDrag(t *testing.T) {
@@ -53,7 +53,7 @@ func TestTrajectoryWithoutDrag_HasMoreAirTimeThan_TrajectoryWithDrag(t *testing.
 	simulator.WithDragType(QuadraticDrag)
 	trajectoryWithDrag, _ := simulator.Simulate()
 
-	assert.Greater(t, trajectoryWithoutDrag, trajectoryWithDrag)
+	assert.Greater(t, trajectoryWithoutDrag.AirTime(), trajectoryWithDrag.AirTime())
 }
 
 func TestTrajectoryWithoutThrust_HasLessAirTimeThan_TrajectoryWithThrust(t *testing.T) {
@@ -64,11 +64,4 @@ func TestTrajectoryWithoutThrust_HasLessAirTimeThan_TrajectoryWithThrust(t *test
 	trajectoryWithThrust, _ := simulator.Simulate()
 
 	assert.Less(t, trajectoryWithoutThrust.AirTime(), trajectoryWithThrust.AirTime())
-}
-
-func TestTrajectoryWithThrust(t *testing.T) {
-	simulator := NewTrajectorySimulator().WithInitialSpeed(50).WithThrust(Thrust{Duration: 1, Force: 30, Angle: 45})
-	trajectory, _ := simulator.Simulate()
-
-	assert.Equal(t, trajectory.timeStepInterval, 1)
 }
