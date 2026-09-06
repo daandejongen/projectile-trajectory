@@ -4,6 +4,7 @@ import (
 	"math"
 	"testing"
 
+	"github.com/daandejongen/projectile-trajectory/linalg"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -30,8 +31,18 @@ func TestSimulation_WithZeroAngle_YieldsTrajectory_WithZeroAirTime(t *testing.T)
 	assert.Equal(t, float64(0), trajectory.AirTime())
 }
 
+func TestSimulation_YieldsTrajectoryWhereFirstPoint_EqualsTheInitialCondition(t *testing.T) {
+	simulator := NewTrajectorySimulator().WithInitialAngle(0.5 * math.Pi).WithInitialPosition(linalg.Vector2d{X: 2, Y: 1}).WithInitialSpeed(50)
+	trajectory, _ := simulator.Simulate()
+	firstPoint := trajectory.Points[0]
+	assert.Equal(t, float64(2), firstPoint.Position.X)
+	assert.Equal(t, float64(1), firstPoint.Position.Y)
+	assert.Less(t, firstPoint.Velocity.X, floatingPointTolerance)
+	assert.Less(t, firstPoint.Velocity.Y-50, floatingPointTolerance)
+}
+
 func TestTrajectoryWithoutDrag_WithInitalSpeedEqualToGravity_Spends2SecondsInTheAir(t *testing.T) {
-	simulator := NewTrajectorySimulator().WithInitialSpeed(9.81).WithInitialAngle(0.5 * math.Pi).WithIntegrationMethod(SimplecticEuler)
+	simulator := NewTrajectorySimulator().WithInitialSpeed(9.81).WithInitialAngle(0.5 * math.Pi).WithIntegrationMethod(SimplecticEulerIntegration)
 	trajectory, err := simulator.Simulate()
 	assert.NoError(t, err)
 	assert.Less(t, math.Abs(trajectory.AirTime()-2), floatingPointTolerance)
@@ -41,7 +52,7 @@ func TestTrajectoryWithoutDrag_HasMoreAirTimeThan_TrajectoryWithDrag(t *testing.
 	simulator := NewTrajectorySimulator().WithInitialSpeed(10)
 	trajectoryWithoutDrag, _ := simulator.Simulate()
 
-	simulator.WithDragType(Quadratic)
+	simulator.WithDragType(QuadraticDrag)
 	trajectoryWithDrag, _ := simulator.Simulate()
 
 	assert.Greater(t, trajectoryWithoutDrag, trajectoryWithDrag)

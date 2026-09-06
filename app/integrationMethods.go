@@ -3,6 +3,6 @@ package app
 type IntegrationMethod string
 
 const (
-	ForwardEuler IntegrationMethod = "Forward Euler"
-	SimplecticEuler = "Simplectic Euler"
+	ForwardEulerIntegration    IntegrationMethod = "Forward Euler"
+	SimplecticEulerIntegration                   = "Simplectic Euler"
 )

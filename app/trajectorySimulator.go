@@ -43,7 +43,7 @@ func NewTrajectorySimulator() *TrajectorySimulator {
 		dragType:                NoDrag,
 		thrust:                  Thrust{Angle: 0, Force: 0, Duration: 0},
 		timeStepInterval:        1e-5,
-		integrationMethod:       ForwardEuler,
+		integrationMethod:       ForwardEulerIntegration,
 		maxTimeSteps:            1000000,
 		errorToleranceAtLanding: 1e-5,
 	}
@@ -80,9 +80,9 @@ func (simulator TrajectorySimulator) Simulate() (Trajectory, error) {
 
 		var nextPosition linalg.Vector2d
 		switch simulator.integrationMethod {
-		case ForwardEuler:
+		case ForwardEulerIntegration:
 			nextPosition = points[timeStepCount].Position.Add(currentVelocity.ComputeScalarMultiplication(simulator.timeStepInterval))
-		case SimplecticEuler:
+		case SimplecticEulerIntegration:
 			nextPosition = points[timeStepCount].Position.Add(nextVelocity.ComputeScalarMultiplication(simulator.timeStepInterval))
 		}
 
@@ -127,7 +127,7 @@ func (simulator *TrajectorySimulator) WithThrust(thrust Thrust) *TrajectorySimul
 
 func (simulator TrajectorySimulator) Print(writer io.Writer) {
 	fmt.Fprintf(writer, "Simulator conditions\n")
-	fmt.Fprintf(writer, "projectile:        %s\n", simulator.projectile.String())
+	fmt.Fprintf(writer, "projectile:        %s\n", simulator.projectile.string())
 	fmt.Fprintf(writer, "initial position:  %f\n", simulator.initialPosition)
 	fmt.Fprintf(writer, "initial angle:     %f\n", simulator.initialAngle)
 	fmt.Fprintf(writer, "initial speed:     %f\n", simulator.initialSpeed)

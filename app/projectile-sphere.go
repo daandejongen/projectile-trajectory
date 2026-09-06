@@ -22,6 +22,6 @@ func (sphere Sphere) DragCoefficient() float64 {
 	return 0.47
 }
 
-func (sphere Sphere) String() string {
-	return fmt.Sprintf("Shape=sphere, radius=%fcm, density=%fg/cm^3", sphere.radius, sphere.density) 
+func (sphere Sphere) string() string {
+	return fmt.Sprintf("Shape=sphere, radius=%fcm, density=%fg/cm^3", sphere.radius, sphere.density)
 }

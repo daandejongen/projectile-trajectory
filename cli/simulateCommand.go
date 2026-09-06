@@ -81,16 +81,16 @@ func NewSimulateCommand() *cobra.Command {
 	command.Flags().BoolVarP(&makePlot, "plot", "P", false, fmt.Sprintf("Bool to indicate whether the trajectory should be plotted and saved to ./%s/%s/", outputDir, plotDir))
 	command.Flags().BoolVarP(&saveData, "save", "S", false, fmt.Sprintf("Bool to indicate whether the trajectory should be saved as csv in ./%s/%s/", outputDir, dataDir))
 	command.Flags().BoolVarP(&saveData, "log", "L", false, fmt.Sprintf("Bool to indicate whether the simulator settings should be saved ./%s/%s/", outputDir, logDir))
-	
+
 	return command
 }
 
 func translateDrag(input string) (app.DragType, error) {
 	switch input {
 	case "l":
-		return app.Linear, nil
+		return app.LinearDrag, nil
 	case "q":
-		return app.Quadratic, nil
+		return app.QuadraticDrag, nil
 	case "":
 		return app.NoDrag, nil
 	default:

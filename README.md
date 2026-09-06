@@ -21,7 +21,7 @@ Simulate a trajectory with 45 degree shooting angle and inital speed 100 m/s.
 The following flags are available:
 
     --drag   -D   > model drag linearly (l) or quadraticly (q) (default empty, no drag)
-    --thrust -T   > add thrust of 100N in constan 45 degree angle (default false)
+    --thrust -T   > add thrust of 100N in constant 45 degree angle (default false)
     --plot   -P   > create a plot of the trajectory (default false)
     --save   -S   > save the trajectory data (default false)
     --log    -L   > log the simulator conditions (default false)

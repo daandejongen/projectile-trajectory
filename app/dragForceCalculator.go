@@ -6,7 +6,7 @@ func newDragForceCalculator(dragType DragType, projectile projectile) dragForceC
 	switch dragType {
 	case NoDrag:
 		return noDragForceCalculator{}
-	case Quadratic:
+	case QuadraticDrag:
 		return quadraticDragForceCalculator{constant: -0.5 * airDensity * projectile.FrontalArea() * projectile.DragCoefficient()}
 	default:
 		return noDragForceCalculator{}
