@@ -27,6 +27,7 @@ func NewSimulateCommand() *cobra.Command {
 	var makePlot bool
 	var saveData bool
 	var logSimulatorConditions bool
+	var integrationMethodInput string
 	command := &cobra.Command{
 		Use:   "sim [angle-in-degrees] [initial-speed-in-meters-per-second]",
 		Short: "Simulate the trajectory of a projectile.",
@@ -37,14 +38,16 @@ func NewSimulateCommand() *cobra.Command {
 			speed, speedParsingError := strconv.ParseFloat(args[1], 64)
 			dragType, dragErr := parseDragTypeInput(dragTypeInput)
 			thrust, thrustErr := parseThrustInput(thrustInput)
-			handleErrors(exitWithErrorStatus, angleParsingErr, speedParsingError, dragErr, thrustErr)
+			integrationMethod, integrationMethodErr := parseIntegrationMethodInput(integrationMethodInput)
+			handleErrors(exitWithErrorStatus, angleParsingErr, speedParsingError, dragErr, thrustErr, integrationMethodErr)
 
 			// Simulate
 			simulator := app.NewTrajectorySimulator().
 				WithInitialAngle(trigonometry.RadiansFromDegrees(angleInDegrees)).
 				WithInitialSpeed(speed).
 				WithDragType(dragType).
-				WithThrust(thrust)
+				WithThrust(thrust).
+				WithIntegrationMethod(integrationMethod)
 			trajectory, trajectorySimulationErr := simulator.Simulate()
 			handleErrors(printErrorToStOut, trajectorySimulationErr)
 
@@ -94,6 +97,7 @@ func NewSimulateCommand() *cobra.Command {
 	command.Flags().BoolVarP(&makePlot, "plot", "P", false, fmt.Sprintf("Bool to indicate whether the trajectory should be plotted and saved to ./%s/", plotDir))
 	command.Flags().BoolVarP(&saveData, "csv", "C", false, fmt.Sprintf("Bool to indicate whether the trajectory should be saved as csv in ./%s/", dataDir))
 	command.Flags().BoolVarP(&logSimulatorConditions, "log", "L", false, fmt.Sprintf("Bool to indicate whether the simulator settings should be saved ./%s/", logDir))
+	command.Flags().StringVarP(&integrationMethodInput, "method", "M", "f", fmt.Sprint("Integration method: f = Forward Euler, s = Simplectic Euler"))
 
 	return command
 }
@@ -146,6 +150,19 @@ func parseThrustInput(input string) (app.Thrust, error) {
 		}
 	}
 	return thrust, nil
+}
+
+func parseIntegrationMethodInput(input string) (app.IntegrationMethod, error) {
+	switch input {
+	case "f":
+		return app.ForwardEulerIntegration, nil
+	case "s":
+		return app.SimplecticEulerIntegration, nil
+	case "":
+		return app.ForwardEulerIntegration, nil
+	default:
+		return app.NoIntegrationMethod, errors.New("integration method not supported")
+	}
 }
 
 func printTrajectoryResults(writer io.Writer, trajectory app.Trajectory) {
