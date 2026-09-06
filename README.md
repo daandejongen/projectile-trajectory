@@ -36,10 +36,11 @@ Using shorthands:
 
 There are three output directories:
 
-    ./output
-        /logs    > to save simulation conditions
-        /data    > to save the trajectory data
-        /plots   > to save trajectory plots
+    .
+    └── output
+        ├── logs    > to save simulation conditions
+        ├── data    > to save the trajectory data
+        └── plots   > to save trajectory plots
 
 Logs and data are filled automatically, plots only when the `--plot` flag is set.
 
