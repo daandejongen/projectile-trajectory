@@ -79,7 +79,6 @@ func NewSimulateCommand() *cobra.Command {
 				handleErrors(printErrorToStOut, createDataFileErr)
 				defer dataFile.Close()
 				app.WriteCsv(dataFile, trajectory)
-				fmt.Println(" succeeded")
 			}
 
 			if makePlot {
@@ -87,7 +86,6 @@ func NewSimulateCommand() *cobra.Command {
 				fmt.Print("generating plot...")
 				plotErr := app.Plot(trajectory, fmt.Sprintf("%s/simulation-plot-%s", plotDir, timeStamp))
 				handleErrors(printErrorToStOut, plotErr)
-				fmt.Println(" succeeded")
 			}
 		},
 	}
