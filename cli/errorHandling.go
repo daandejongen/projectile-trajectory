@@ -5,18 +5,7 @@ import (
 	"os"
 )
 
-type errorAction = func(error)
-
-func printErrorToStOut(err error) {
-	fmt.Println(err)
-}
-
-func exitWithErrorStatus(err error) {
-	fmt.Println(err.Error())
-	os.Exit(1)
-}
-
-func handleErrors(action errorAction, possibleErrors ...error) {
+func handleErrors(exitOnError bool, possibleErrors ...error) {
 	hasError := false
 	errors := []error{}
 
@@ -29,7 +18,10 @@ func handleErrors(action errorAction, possibleErrors ...error) {
 
 	if hasError {
 		for _, err := range errors {
-			action(err)
+			fmt.Println(err.Error())
+		}
+		if exitOnError {
+			os.Exit(1)
 		}
 	}
 }

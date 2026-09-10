@@ -39,7 +39,7 @@ func NewSimulateCommand() *cobra.Command {
 			dragType, dragErr := parseDragTypeInput(dragTypeInput)
 			thrust, thrustErr := parseThrustInput(thrustInput)
 			integrationMethod, integrationMethodErr := parseIntegrationMethodInput(integrationMethodInput)
-			handleErrors(exitWithErrorStatus, angleParsingErr, speedParsingError, dragErr, thrustErr, integrationMethodErr)
+			handleErrors(true, angleParsingErr, speedParsingError, dragErr, thrustErr, integrationMethodErr)
 
 			// Simulate
 			simulator := app.NewTrajectorySimulator().
@@ -49,7 +49,7 @@ func NewSimulateCommand() *cobra.Command {
 				WithThrust(thrust).
 				WithIntegrationMethod(integrationMethod)
 			trajectory, trajectorySimulationErr := simulator.Simulate()
-			handleErrors(printErrorToStOut, trajectorySimulationErr)
+			handleErrors(false, trajectorySimulationErr)
 
 			// Output
 			if trajectorySimulationErr == nil {
@@ -61,14 +61,16 @@ func NewSimulateCommand() *cobra.Command {
 			if logSimulatorConditions {
 				os.MkdirAll(logDir, 0755)
 				logFile, createLogFileErr := os.Create(fmt.Sprintf("%s/simulation-log-%s.txt", logDir, timeStamp))
-				handleErrors(printErrorToStOut, createLogFileErr)
-				defer logFile.Close()
-				simulator.Print(logFile)
-				fmt.Fprint(logFile, "\nResult\n")
-				if trajectorySimulationErr ==  nil {
-					printTrajectoryResults(logFile, trajectory)
-				} else {
-					fmt.Fprintf(logFile, trajectorySimulationErr.Error())
+				handleErrors(false, createLogFileErr)
+				if createLogFileErr == nil {
+					defer logFile.Close()
+					simulator.Print(logFile)
+					fmt.Fprint(logFile, "\nResult\n")
+					if trajectorySimulationErr ==  nil {
+						printTrajectoryResults(logFile, trajectory)
+					} else {
+						fmt.Fprintf(logFile, trajectorySimulationErr.Error())
+					}
 				}
 			}
 
@@ -76,16 +78,18 @@ func NewSimulateCommand() *cobra.Command {
 				os.MkdirAll(dataDir, 0755)
 				fmt.Print("writing csv...")
 				dataFile, createDataFileErr := os.Create(fmt.Sprintf("%s/simulation-data-%s.csv", dataDir, timeStamp))
-				handleErrors(printErrorToStOut, createDataFileErr)
-				defer dataFile.Close()
-				app.WriteCsv(dataFile, trajectory)
+				handleErrors(false, createDataFileErr)
+				if createDataFileErr == nil {
+					defer dataFile.Close()
+					app.WriteCsv(dataFile, trajectory)
+				}
 			}
 
 			if makePlot {
 				os.MkdirAll(plotDir, 0755)
 				fmt.Print("generating plot...")
 				plotErr := app.Plot(trajectory, fmt.Sprintf("%s/simulation-plot-%s", plotDir, timeStamp))
-				handleErrors(printErrorToStOut, plotErr)
+				handleErrors(false, plotErr)
 			}
 		},
 	}
